@@ -1,5 +1,4 @@
-
-import { useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Instagram, Mail, Facebook } from "lucide-react";
 import {
   LineChart,
@@ -354,19 +353,25 @@ export default function FinanceWithPanthAboutPage() {
             </div>
 
             <div className="h-[380px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={calculatorData.yearlyData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" />
-                  <XAxis dataKey="year" />
-                  <YAxis tickFormatter={(value) => `$${Number(value).toLocaleString()}`} />
-                  <Tooltip
-                    formatter={(value: number) => formatCurrency(value)}
-                    labelFormatter={(label) => `Year ${label}`}
-                  />
-                  <Line type="monotone" dataKey="invested" stroke="#71717a" strokeWidth={3} dot={false} />
-                  <Line type="monotone" dataKey="value" stroke="#2563eb" strokeWidth={3} dot={false} />
-                </LineChart>
-              </ResponsiveContainer>
+              {Number(years) > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={calculatorData.yearlyData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" />
+                    <XAxis dataKey="year" />
+                    <YAxis tickFormatter={(value) => `$${Number(value).toLocaleString()}`} />
+                    <Tooltip
+                      formatter={(value: number) => formatCurrency(value)}
+                      labelFormatter={(label) => `Year ${label}`}
+                    />
+                    <Line type="monotone" dataKey="invested" stroke="#71717a" strokeWidth={3} dot={false} />
+                    <Line type="monotone" dataKey="value" stroke="#2563eb" strokeWidth={3} dot={false} />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex h-full items-center justify-center text-zinc-400">
+                  Enter values above to see the growth chart
+                </div>
+              )}
             </div>
           </div>
         </div>
