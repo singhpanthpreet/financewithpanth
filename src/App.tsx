@@ -81,17 +81,24 @@ export default function FinanceWithPanthAboutPage() {
     <div className="min-h-screen bg-white text-zinc-900">
       {/* NAVBAR */}
       <header className="sticky top-0 z-50 border-b bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <div className="text-lg font-bold">Finance With Panth</div>
-
+        <div className="mx-auto flex max-w-6xl items-center justify-end px-6 py-4">
           <nav className="flex items-center gap-6 text-sm font-medium text-zinc-700">
-            <button onClick={() => scrollToSection(aboutRef)} className="hover:text-blue-600">
+            <button
+              onClick={() => scrollToSection(aboutRef)}
+              className="transition hover:text-blue-600"
+            >
               About
             </button>
-            <button onClick={() => scrollToSection(calculatorRef)} className="hover:text-blue-600">
+            <button
+              onClick={() => scrollToSection(calculatorRef)}
+              className="transition hover:text-blue-600"
+            >
               Calculator
             </button>
-            <button onClick={() => scrollToSection(connectRef)} className="hover:text-blue-600">
+            <button
+              onClick={() => scrollToSection(connectRef)}
+              className="transition hover:text-blue-600"
+            >
               Contact
             </button>
           </nav>
@@ -108,12 +115,15 @@ export default function FinanceWithPanthAboutPage() {
 
             <h1 className="text-4xl font-bold leading-tight sm:text-5xl md:text-6xl">
               Helping everyday people
-              <span className="block text-blue-600">build wealth through simple investing.</span>
+              <span className="block text-blue-600">
+                build wealth through simple investing.
+              </span>
             </h1>
 
             <p className="mt-6 max-w-xl text-lg leading-8 text-zinc-600">
               I create practical content about long-term investing, ETFs, and financial discipline.
-              No hype, no trading signals — just clear ideas to help people grow their money over time.
+              No hype, no trading signals — just clear ideas to help people grow their money over
+              time.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-4">
@@ -142,7 +152,7 @@ export default function FinanceWithPanthAboutPage() {
       </section>
 
       {/* ABOUT ME */}
-      <section id="about" ref={aboutRef} className="bg-zinc-50 scroll-mt-24 py-20">
+      <section id="about" ref={aboutRef} className="scroll-mt-24 bg-zinc-50 py-20">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-3xl font-bold sm:text-4xl">About Me</h2>
 
@@ -398,7 +408,7 @@ export default function FinanceWithPanthAboutPage() {
       </section>
 
       {/* CONNECT */}
-      <section id="connect" ref={connectRef} className="border-t bg-zinc-50 scroll-mt-24 py-20">
+      <section id="connect" ref={connectRef} className="scroll-mt-24 border-t bg-zinc-50 py-20">
         <div className="mx-auto max-w-6xl px-6">
           <div className="max-w-3xl">
             <h2 className="text-3xl font-bold sm:text-4xl">Connect With Me</h2>
@@ -412,6 +422,8 @@ export default function FinanceWithPanthAboutPage() {
               href="https://www.instagram.com/financewithpanth?igsh=MWFsaHl5NW0zcXpnbg%3D%3D"
               target="_blank"
               rel="noreferrer"
+              aria-label="Instagram"
+              title="Instagram"
               className="text-zinc-700 transition hover:text-pink-600"
             >
               <Instagram className="h-8 w-8" />
@@ -421,15 +433,15 @@ export default function FinanceWithPanthAboutPage() {
               href="https://tiktok.com/@financewithpanth"
               target="_blank"
               rel="noreferrer"
+              aria-label="TikTok"
+              title="TikTok"
               className="text-zinc-700 transition hover:text-black"
             >
               <TikTokIcon className="h-8 w-8" />
             </a>
 
             <a
-              href="https://mail.google.com/mail/?view=cm&fs=1&to=financeiwthpanth@gmail.com"
-              target="_blank"
-              rel="noreferrer"
+              href="mailto:financewithpanth@gmail.com"
               aria-label="Email Panthpreet"
               title="Email Panthpreet"
               className="text-zinc-700 transition hover:text-blue-600"
@@ -441,6 +453,8 @@ export default function FinanceWithPanthAboutPage() {
               href="https://www.facebook.com/people/Financewithpanth/61574887317013/"
               target="_blank"
               rel="noreferrer"
+              aria-label="Facebook"
+              title="Facebook"
               className="text-zinc-700 transition hover:text-blue-700"
             >
               <Facebook className="h-8 w-8" />
