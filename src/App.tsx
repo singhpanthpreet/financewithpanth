@@ -82,7 +82,7 @@ export default function FinanceWithPanthAboutPage() {
       {/* NAVBAR */}
       <header className="sticky top-0 z-50 border-b bg-white/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <div className="font-bold text-lg">Finance With Panth</div>
+          <div className="text-lg font-bold">Finance With Panth</div>
 
           <nav className="flex items-center gap-6 text-sm font-medium text-zinc-700">
             <button onClick={() => scrollToSection(aboutRef)} className="hover:text-blue-600">
@@ -248,9 +248,9 @@ export default function FinanceWithPanthAboutPage() {
       <section
         id="calculator"
         ref={calculatorRef}
-        className="mx-auto max-w-6xl scroll-mt-24 px-6 py-20"
+        className="mx-auto max-w-6xl scroll-mt-24 px-6 py-16"
       >
-        <div className="mb-10 max-w-3xl">
+        <div className="mb-8 max-w-3xl">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">
             Compound Interest Calculator
           </p>
@@ -259,119 +259,139 @@ export default function FinanceWithPanthAboutPage() {
             See how your money can grow over time
           </h2>
 
-          <p className="mt-4 text-lg leading-8 text-zinc-600">
-            Enter values below to see how compounding can grow your investments.
+          <p className="mt-3 text-base leading-7 text-zinc-600">
+            Enter values below to compare invested money with portfolio growth.
           </p>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-[420px_minmax(0,1fr)]">
-          <div className="rounded-3xl bg-zinc-50 p-6 shadow-lg">
-            <div className="space-y-6">
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-zinc-700">
-                  Initial investment
-                </label>
-                <input
-                  type="number"
-                  placeholder="e.g. 10000"
-                  value={initialInvestment}
-                  onChange={(e) => setInitialInvestment(e.target.value)}
-                  className="w-full rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-blue-600"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-zinc-700">
-                  Monthly contribution
-                </label>
-                <input
-                  type="number"
-                  placeholder="e.g. 500"
-                  value={monthlyContribution}
-                  onChange={(e) => setMonthlyContribution(e.target.value)}
-                  className="w-full rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-blue-600"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-zinc-700">
-                  Interest rate (% per year)
-                </label>
-                <input
-                  type="number"
-                  placeholder="e.g. 10"
-                  value={interestRate}
-                  onChange={(e) => setInterestRate(e.target.value)}
-                  className="w-full rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-blue-600"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-zinc-700">
-                  Length of time (years)
-                </label>
-                <input
-                  type="number"
-                  placeholder="e.g. 30"
-                  value={years}
-                  onChange={(e) => setYears(e.target.value)}
-                  className="w-full rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-blue-600"
-                />
-              </div>
-            </div>
-
-            <div className="mt-8 grid gap-4">
-              <div className="rounded-2xl bg-white p-5 shadow-sm">
-                <p className="text-sm text-zinc-500">Total invested</p>
-                <p className="mt-2 text-2xl font-bold">
-                  {formatCurrency(calculatorData.totalInvested)}
-                </p>
-              </div>
-
-              <div className="rounded-2xl bg-white p-5 shadow-sm">
-                <p className="text-sm text-zinc-500">Current value</p>
-                <p className="mt-2 text-2xl font-bold text-blue-600">
-                  {formatCurrency(calculatorData.finalValue)}
-                </p>
-              </div>
-
-              <div className="rounded-2xl bg-white p-5 shadow-sm">
-                <p className="text-sm text-zinc-500">Growth earned</p>
-                <p className="mt-2 text-2xl font-bold text-emerald-600">
-                  {formatCurrency(calculatorData.totalGrowth)}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-3xl bg-white p-6 shadow-lg">
-            <div className="mb-4">
-              <h3 className="text-xl font-bold">Invested Money vs Current Value</h3>
-              <p className="mt-1 text-sm text-zinc-500">
-                See how compound growth accelerates over time.
-              </p>
-            </div>
-
-            <div className="h-[380px] w-full">
-              {Number(years) > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={calculatorData.yearlyData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" />
-                    <XAxis dataKey="year" />
-                    <YAxis tickFormatter={(value) => `$${Number(value).toLocaleString()}`} />
-                    <Tooltip
-                      formatter={(value: number) => formatCurrency(value)}
-                      labelFormatter={(label) => `Year ${label}`}
-                    />
-                    <Line type="monotone" dataKey="invested" stroke="#71717a" strokeWidth={3} dot={false} />
-                    <Line type="monotone" dataKey="value" stroke="#2563eb" strokeWidth={3} dot={false} />
-                  </LineChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="flex h-full items-center justify-center text-zinc-400">
-                  Enter values above to see the growth chart
+        <div className="rounded-3xl bg-white p-4 shadow-lg sm:p-6">
+          <div className="grid gap-4 lg:grid-cols-[340px_minmax(0,1fr)] lg:items-start">
+            <div className="rounded-3xl bg-zinc-50 p-4 sm:p-5">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-zinc-700">
+                    Initial investment
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="e.g. 10000"
+                    value={initialInvestment}
+                    onChange={(e) => setInitialInvestment(e.target.value)}
+                    className="w-full rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-blue-600"
+                  />
                 </div>
-              )}
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-zinc-700">
+                    Monthly contribution
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="e.g. 500"
+                    value={monthlyContribution}
+                    onChange={(e) => setMonthlyContribution(e.target.value)}
+                    className="w-full rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-blue-600"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-zinc-700">
+                    Interest rate (% per year)
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="e.g. 10"
+                    value={interestRate}
+                    onChange={(e) => setInterestRate(e.target.value)}
+                    className="w-full rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-blue-600"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-zinc-700">
+                    Length of time (years)
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="e.g. 30"
+                    value={years}
+                    onChange={(e) => setYears(e.target.value)}
+                    className="w-full rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-blue-600"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="min-w-0">
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div className="rounded-2xl bg-zinc-50 p-4 shadow-sm">
+                  <p className="text-sm text-zinc-500">Total invested</p>
+                  <p className="mt-2 text-xl font-bold">
+                    {formatCurrency(calculatorData.totalInvested)}
+                  </p>
+                </div>
+
+                <div className="rounded-2xl bg-zinc-50 p-4 shadow-sm">
+                  <p className="text-sm text-zinc-500">Current value</p>
+                  <p className="mt-2 text-xl font-bold text-blue-600">
+                    {formatCurrency(calculatorData.finalValue)}
+                  </p>
+                </div>
+
+                <div className="rounded-2xl bg-zinc-50 p-4 shadow-sm">
+                  <p className="text-sm text-zinc-500">Growth earned</p>
+                  <p className="mt-2 text-xl font-bold text-emerald-600">
+                    {formatCurrency(calculatorData.totalGrowth)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-4 rounded-3xl bg-zinc-50 p-4 sm:p-5">
+                <div className="mb-3">
+                  <h3 className="text-lg font-bold">Invested Money vs Current Value</h3>
+                  <p className="mt-1 text-sm text-zinc-500">
+                    See how compound growth accelerates over time.
+                  </p>
+                </div>
+
+                <div className="h-[300px] w-full sm:h-[340px]">
+                  {Number(years) > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={calculatorData.yearlyData}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" />
+                        <XAxis dataKey="year" tick={{ fontSize: 12 }} />
+                        <YAxis
+                          tick={{ fontSize: 12 }}
+                          tickFormatter={(value) => `$${Number(value).toLocaleString()}`}
+                          width={80}
+                        />
+                        <Tooltip
+                          formatter={(value: number) => formatCurrency(value)}
+                          labelFormatter={(label) => `Year ${label}`}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="invested"
+                          stroke="#71717a"
+                          strokeWidth={3}
+                          dot={false}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="value"
+                          stroke="#2563eb"
+                          strokeWidth={3}
+                          dot={false}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-zinc-400">
+                      Enter values above to see the growth chart
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -418,7 +438,7 @@ export default function FinanceWithPanthAboutPage() {
             </a>
 
             <a
-              href="https://facebook.com/financewithpanth"
+              href="https://www.facebook.com/people/Financewithpanth/61574887317013/"
               target="_blank"
               rel="noreferrer"
               className="text-zinc-700 transition hover:text-blue-700"
