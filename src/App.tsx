@@ -131,7 +131,7 @@ export default function FinanceWithPanthAboutPage() {
               <div className="absolute -inset-4 rounded-full bg-blue-200/40 blur-2xl"></div>
               <div className="relative h-72 w-72 overflow-hidden rounded-full border-4 border-white shadow-2xl">
                 <img
-                  src="/panth.jpg"
+                  src="/panth.JPG"
                   alt="Panthpreet Singh"
                   className="h-full w-full object-cover object-center"
                 />
