@@ -18,19 +18,159 @@ function TikTokIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+type ChartRow = {
+  year: number;
+  invested: number;
+  value: number;
+};
+
+function SectionTitle({
+  eyebrow,
+  title,
+  description,
+  centered = false,
+}: {
+  eyebrow?: string;
+  title: string;
+  description?: string;
+  centered?: boolean;
+}) {
+  return (
+    <div className={`mb-8 max-w-3xl ${centered ? "mx-auto text-center" : ""}`}>
+      {eyebrow ? (
+        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">
+          {eyebrow}
+        </p>
+      ) : null}
+      <h2 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl">{title}</h2>
+      {description ? (
+        <p className="mt-3 text-sm leading-7 text-zinc-600 sm:text-base">{description}</p>
+      ) : null}
+    </div>
+  );
+}
+
+function InfoCard({
+  label,
+  value,
+  valueClassName = "",
+}: {
+  label: string;
+  value: string;
+  valueClassName?: string;
+}) {
+  return (
+    <div className="rounded-2xl bg-zinc-50 p-4 shadow-sm">
+      <p className="text-sm text-zinc-500">{label}</p>
+      <p className={`mt-2 text-lg font-bold sm:text-xl ${valueClassName}`}>{value}</p>
+    </div>
+  );
+}
+
+function FeatureCard({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="rounded-3xl bg-white p-5 shadow-md">
+      <h3 className="text-base font-semibold sm:text-lg">{title}</h3>
+      <p className="mt-2 text-sm leading-6 text-zinc-600">{description}</p>
+    </div>
+  );
+}
+
+function StatCard({
+  label,
+  title,
+}: {
+  label: string;
+  title: string;
+}) {
+  return (
+    <div className="rounded-3xl border border-zinc-200/80 bg-white p-5 shadow-sm shadow-zinc-200/60">
+      <p className="text-sm text-zinc-500">{label}</p>
+      <h3 className="mt-2 text-lg font-semibold sm:text-xl">{title}</h3>
+    </div>
+  );
+}
+
+function InputField({
+  label,
+  placeholder,
+  value,
+  onChange,
+}: {
+  label: string;
+  placeholder: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div>
+      <label className="mb-2 block text-sm font-semibold text-zinc-700">{label}</label>
+      <input
+        type="number"
+        min="0"
+        inputMode="decimal"
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => {
+          const nextValue = e.target.value;
+
+          if (nextValue === "") {
+            onChange("");
+            return;
+          }
+
+          if (Number(nextValue) >= 0) {
+            onChange(nextValue);
+          }
+        }}
+        className="w-full rounded-2xl border border-zinc-300 bg-white px-4 py-3 text-base outline-none transition focus:border-blue-600"
+      />
+    </div>
+  );
+}
+
+function SocialLink({
+  href,
+  label,
+  children,
+}: {
+  href: string;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <a
+      href={href}
+      target={href.startsWith("mailto:") ? undefined : "_blank"}
+      rel={href.startsWith("mailto:") ? undefined : "noreferrer"}
+      aria-label={label}
+      title={label}
+      className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-zinc-700 shadow-sm transition hover:-translate-y-0.5 hover:text-blue-600"
+    >
+      {children}
+    </a>
+  );
+}
+
 export default function FinanceWithPanthAboutPage() {
   const aboutRef = useRef<HTMLElement | null>(null);
   const calculatorRef = useRef<HTMLElement | null>(null);
   const connectRef = useRef<HTMLElement | null>(null);
 
-  const scrollToSection = (ref: { current: HTMLElement | null }) => {
-    ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
   const [initialInvestment, setInitialInvestment] = useState("");
   const [monthlyContribution, setMonthlyContribution] = useState("");
   const [interestRate, setInterestRate] = useState("");
   const [years, setYears] = useState("");
+
+  const scrollToSection = (ref: React.RefObject<HTMLElement | null>) => {
+    ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("en-CA", {
@@ -41,21 +181,18 @@ export default function FinanceWithPanthAboutPage() {
   };
 
   const calculatorData = useMemo(() => {
-    const init = Number(initialInvestment) || 0;
-    const monthly = Number(monthlyContribution) || 0;
-    const rate = Number(interestRate) || 0;
-    const yrs = Number(years) || 0;
+    const init = Math.max(0, Number(initialInvestment) || 0);
+    const monthly = Math.max(0, Number(monthlyContribution) || 0);
+    const rate = Math.max(0, Number(interestRate) || 0);
+    const yrs = Math.max(0, Number(years) || 0);
 
-    const annualRate = rate / 100;
-    const monthlyRate = annualRate / 12;
-    const totalMonths = yrs * 12;
+    const monthlyRate = rate / 100 / 12;
+    const totalMonths = Math.floor(yrs * 12);
 
     let currentValue = init;
     let investedMoney = init;
 
-    const yearlyData: { year: number; invested: number; value: number }[] = [
-      { year: 0, invested: init, value: init },
-    ];
+    const yearlyData: ChartRow[] = [{ year: 0, invested: init, value: init }];
 
     for (let month = 1; month <= totalMonths; month++) {
       currentValue = currentValue * (1 + monthlyRate) + monthly;
@@ -74,30 +211,34 @@ export default function FinanceWithPanthAboutPage() {
     const finalValue = Math.round(currentValue);
     const totalGrowth = finalValue - totalInvested;
 
-    return { yearlyData, totalInvested, finalValue, totalGrowth };
+    return {
+      yearlyData,
+      totalInvested,
+      finalValue,
+      totalGrowth,
+    };
   }, [initialInvestment, monthlyContribution, interestRate, years]);
 
   return (
     <div className="min-h-screen bg-white text-zinc-900">
-      {/* NAVBAR */}
-      <header className="sticky top-0 z-50 border-b bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-end px-6 py-4">
-          <nav className="flex items-center gap-6 text-sm font-medium text-zinc-700">
+      <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/75">
+        <div className="mx-auto flex max-w-6xl items-center justify-center px-3 py-3 sm:justify-end sm:px-6 sm:py-4">
+          <nav className="grid w-full max-w-sm grid-cols-3 gap-2 rounded-2xl bg-zinc-100/80 p-1 text-sm font-medium text-zinc-700 sm:flex sm:w-auto sm:max-w-none sm:bg-transparent sm:p-0">
             <button
               onClick={() => scrollToSection(aboutRef)}
-              className="transition hover:text-blue-600"
+              className="rounded-xl px-3 py-2 transition hover:bg-white hover:text-blue-600 sm:px-0 sm:py-0 sm:hover:bg-transparent"
             >
               About
             </button>
             <button
               onClick={() => scrollToSection(calculatorRef)}
-              className="transition hover:text-blue-600"
+              className="rounded-xl px-3 py-2 transition hover:bg-white hover:text-blue-600 sm:px-0 sm:py-0 sm:hover:bg-transparent"
             >
               Calculator
             </button>
             <button
               onClick={() => scrollToSection(connectRef)}
-              className="transition hover:text-blue-600"
+              className="rounded-xl px-3 py-2 transition hover:bg-white hover:text-blue-600 sm:px-0 sm:py-0 sm:hover:bg-transparent"
             >
               Contact
             </button>
@@ -105,41 +246,47 @@ export default function FinanceWithPanthAboutPage() {
         </div>
       </header>
 
-      {/* HERO */}
-      <section className="mx-auto max-w-6xl px-6 py-20">
-        <div className="grid items-center gap-12 md:grid-cols-2">
-          <div>
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-blue-600">
+      <section className="mx-auto max-w-6xl px-4 pb-12 pt-10 sm:px-6 sm:pb-20 sm:pt-20">
+        <div className="grid items-center gap-10 md:grid-cols-2">
+          <div className="order-2 md:order-1">
+            <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-blue-600 sm:text-sm">
               Finance With Panth
             </p>
 
-            <h1 className="text-4xl font-bold leading-tight sm:text-5xl md:text-6xl">
+            <h1 className="max-w-xl text-3xl font-bold leading-[1.05] tracking-tight text-zinc-900 sm:text-5xl md:text-6xl">
               Helping everyday people
-              <span className="block text-blue-600">
+              <span className="mt-1 block text-blue-600">
                 build wealth through simple investing.
               </span>
             </h1>
 
-            <p className="mt-6 max-w-xl text-lg leading-8 text-zinc-600">
-              I create practical content about long-term investing, ETFs, and financial discipline.
-              No hype, no trading signals — just clear ideas to help people grow their money over
-              time.
+            <p className="mt-5 max-w-xl text-[15px] leading-7 text-zinc-600 sm:text-lg sm:leading-8">
+              I create practical content about long-term investing, ETFs, and financial
+              discipline. No hype, no trading signals — just clear ideas to help people grow
+              their money over time.
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-4">
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
               <button
                 onClick={() => scrollToSection(calculatorRef)}
-                className="rounded-2xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:scale-105 hover:bg-blue-700"
+                className="w-full rounded-2xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-md shadow-blue-200/70 transition hover:bg-blue-700 sm:w-auto"
               >
                 Compound Interest Calculator
+              </button>
+              <button
+                onClick={() => scrollToSection(connectRef)}
+                className="w-full rounded-2xl border border-zinc-200 bg-white px-6 py-3.5 text-sm font-semibold text-zinc-700 transition hover:border-zinc-300 hover:bg-zinc-50 sm:w-auto"
+              >
+                Connect With Me
               </button>
             </div>
           </div>
 
-          <div className="flex items-center justify-center">
+          <div className="order-1 flex items-center justify-center md:order-2">
             <div className="relative">
-              <div className="absolute -inset-4 rounded-full bg-blue-200/40 blur-2xl"></div>
-              <div className="relative h-72 w-72 overflow-hidden rounded-full border-4 border-white shadow-2xl">
+              <div className="absolute -inset-6 rounded-full bg-blue-200/50 blur-3xl" />
+              <div className="absolute inset-0 rounded-full border border-blue-100" />
+              <div className="relative h-48 w-48 overflow-hidden rounded-full border-[6px] border-white shadow-[0_20px_60px_rgba(0,0,0,0.12)] sm:h-64 sm:w-64 md:h-72 md:w-72">
                 <img
                   src="/panth.JPG"
                   alt="Panthpreet Singh"
@@ -151,21 +298,23 @@ export default function FinanceWithPanthAboutPage() {
         </div>
       </section>
 
-      {/* ABOUT ME */}
-      <section id="about" ref={aboutRef} className="scroll-mt-24 bg-zinc-50 py-20">
-        <div className="mx-auto max-w-5xl px-6">
-          <h2 className="text-3xl font-bold sm:text-4xl">About Me</h2>
+      <section id="about" ref={aboutRef} className="scroll-mt-24 bg-zinc-50 py-14 sm:py-20">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6">
+          <SectionTitle
+            title="About Me"
+            description="A simple approach to long-term investing, built around discipline, consistency, and clarity."
+          />
 
-          <div className="mt-6 space-y-4 text-lg leading-8 text-zinc-600">
+          <div className="space-y-4 text-base leading-7 text-zinc-600 sm:text-lg sm:leading-8">
             <p>
               I am Panthpreet Singh, originally from Ludhiana, Punjab, and currently living in
               Surrey, British Columbia, Canada. I work full-time as an SAP ABAP Development
               Consultant.
             </p>
             <p>
-              I have more than 7 years of investing experience across the Indian, US, and Canadian
-              markets. Over the years, I have focused on understanding long-term investing,
-              portfolio stability, and disciplined wealth building.
+              I have more than 7 years of investing experience across the Indian, US, and
+              Canadian markets. Over the years, I have focused on understanding long-term
+              investing, portfolio stability, and disciplined wealth building.
             </p>
             <p>
               My primary approach is to build stable portfolios through ETFs and fundamentally
@@ -174,206 +323,135 @@ export default function FinanceWithPanthAboutPage() {
             </p>
           </div>
 
-          <div className="mt-8 flex flex-wrap gap-3">
-            <span className="rounded-full bg-white px-4 py-2 text-sm font-semibold shadow">
-              India 🇮🇳 Market
-            </span>
-            <span className="rounded-full bg-white px-4 py-2 text-sm font-semibold shadow">
-              US 🇺🇸 Market
-            </span>
-            <span className="rounded-full bg-white px-4 py-2 text-sm font-semibold shadow">
-              Canada 🇨🇦 Market
-            </span>
+          <div className="mt-8 grid gap-3 sm:grid-cols-3">
+            <div className="rounded-2xl border border-zinc-200/80 bg-white px-4 py-4 shadow-sm">
+              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-400">
+                Market Coverage
+              </p>
+              <p className="mt-1 text-sm font-semibold text-zinc-700">India 🇮🇳</p>
+            </div>
+            <div className="rounded-2xl border border-zinc-200/80 bg-white px-4 py-4 shadow-sm">
+              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-400">
+                Market Coverage
+              </p>
+              <p className="mt-1 text-sm font-semibold text-zinc-700">US 🇺🇸</p>
+            </div>
+            <div className="rounded-2xl border border-zinc-200/80 bg-white px-4 py-4 shadow-sm">
+              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-400">
+                Market Coverage
+              </p>
+              <p className="mt-1 text-sm font-semibold text-zinc-700">Canada 🇨🇦</p>
+            </div>
           </div>
 
-          <div className="mt-8 rounded-3xl bg-blue-600 p-6 text-white shadow-lg">
+          <div className="mt-8 rounded-[28px] bg-gradient-to-br from-blue-600 to-blue-700 p-6 text-white shadow-lg shadow-blue-200/70">
             <p className="text-sm opacity-80">Experience</p>
-            <h3 className="mt-1 text-2xl font-bold">7+ Years Investing Across Global Markets</h3>
-            <p className="mt-2 text-sm text-blue-100">
+            <h3 className="mt-1 text-xl font-bold sm:text-2xl">
+              7+ Years Investing Across Global Markets
+            </h3>
+            <p className="mt-2 text-sm leading-6 text-blue-100">
               Focused on long-term investing through ETFs and fundamentally strong companies.
             </p>
           </div>
 
-          <div className="mt-10 grid gap-6 sm:grid-cols-3">
-            <div className="rounded-3xl bg-white p-6 shadow-md">
-              <p className="text-sm text-zinc-500">Focus</p>
-              <h3 className="mt-2 text-xl font-semibold">Long-term investing</h3>
-            </div>
-
-            <div className="rounded-3xl bg-white p-6 shadow-md">
-              <p className="text-sm text-zinc-500">Content</p>
-              <h3 className="mt-2 text-xl font-semibold">ETFs, stocks & compounding</h3>
-            </div>
-
-            <div className="rounded-3xl bg-white p-6 shadow-md">
-              <p className="text-sm text-zinc-500">Goal</p>
-              <h3 className="mt-2 text-xl font-semibold">Make investing simple</h3>
-            </div>
+          <div className="mt-10 grid gap-4 sm:grid-cols-3 sm:gap-6">
+            <StatCard label="Focus" title="Long-term investing" />
+            <StatCard label="Content" title="ETFs, stocks & compounding" />
+            <StatCard label="Goal" title="Make investing simple" />
           </div>
         </div>
       </section>
 
-      {/* INVESTING PHILOSOPHY */}
-      <section className="mx-auto max-w-6xl px-6 py-20">
-        <div className="mb-12 max-w-3xl">
-          <h2 className="text-3xl font-bold sm:text-4xl">My Investing Philosophy</h2>
-          <p className="mt-4 text-lg leading-8 text-zinc-600">
-            My approach to investing is based on simplicity, discipline, and long-term thinking.
-            Instead of chasing quick profits, I focus on building sustainable wealth over decades.
-          </p>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-4">
-          <div className="rounded-3xl bg-white p-6 shadow-md">
-            <h3 className="text-lg font-semibold">Long-Term Focus</h3>
-            <p className="mt-2 text-sm text-zinc-600">
-              Invest with a horizon of decades, not days or weeks.
-            </p>
-          </div>
-
-          <div className="rounded-3xl bg-white p-6 shadow-md">
-            <h3 className="text-lg font-semibold">ETF First Approach</h3>
-            <p className="mt-2 text-sm text-zinc-600">
-              Core portfolio built using diversified ETFs.
-            </p>
-          </div>
-
-          <div className="rounded-3xl bg-white p-6 shadow-md">
-            <h3 className="text-lg font-semibold">Strong Companies</h3>
-            <p className="mt-2 text-sm text-zinc-600">
-              Add fundamentally strong companies for long-term growth.
-            </p>
-          </div>
-
-          <div className="rounded-3xl bg-white p-6 shadow-md">
-            <h3 className="text-lg font-semibold">Power of Compounding</h3>
-            <p className="mt-2 text-sm text-zinc-600">
-              Consistency and patience allow compounding to work over time.
-            </p>
-          </div>
+      <section className="mx-auto max-w-4xl px-4 py-12 sm:px-6 sm:py-16">
+        <div className="rounded-[28px] border border-zinc-200/80 bg-white px-5 py-8 shadow-sm sm:px-8">
+          <SectionTitle
+            title="My Investing Philosophy"
+            description="My approach to investing is based on simplicity, discipline, and long-term thinking. Instead of chasing quick profits, I focus on building sustainable wealth over decades."
+            centered
+          />
         </div>
       </section>
 
-      {/* CALCULATOR */}
       <section
         id="calculator"
         ref={calculatorRef}
-        className="mx-auto max-w-6xl scroll-mt-24 px-6 py-16"
+        className="mx-auto max-w-6xl scroll-mt-24 px-4 py-14 sm:px-6 sm:py-16"
       >
-        <div className="mb-8 max-w-3xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">
-            Compound Interest Calculator
-          </p>
+        <SectionTitle
+          eyebrow="Compound Interest Calculator"
+          title="See how your money can grow over time"
+          description="Enter values below to compare invested money with portfolio growth."
+        />
 
-          <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-            See how your money can grow over time
-          </h2>
-
-          <p className="mt-3 text-base leading-7 text-zinc-600">
-            Enter values below to compare invested money with portfolio growth.
-          </p>
-        </div>
-
-        <div className="rounded-3xl bg-white p-4 shadow-lg sm:p-6">
-          <div className="grid gap-4 lg:grid-cols-[340px_minmax(0,1fr)] lg:items-start">
-            <div className="rounded-3xl bg-zinc-50 p-4 sm:p-5">
+        <div className="rounded-[28px] border border-zinc-200/80 bg-white p-3 shadow-lg shadow-zinc-200/70 sm:p-6">
+          <div className="grid gap-4 lg:grid-cols-[320px_minmax(0,1fr)] lg:items-start">
+            <div className="rounded-[24px] border border-zinc-200/70 bg-zinc-50 p-4 sm:p-5">
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-                <div>
-                  <label className="mb-2 block text-sm font-semibold text-zinc-700">
-                    Initial investment
-                  </label>
-                  <input
-                    type="number"
-                    placeholder="e.g. 10000"
-                    value={initialInvestment}
-                    onChange={(e) => setInitialInvestment(e.target.value)}
-                    className="w-full rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-blue-600"
-                  />
-                </div>
-
-                <div>
-                  <label className="mb-2 block text-sm font-semibold text-zinc-700">
-                    Monthly contribution
-                  </label>
-                  <input
-                    type="number"
-                    placeholder="e.g. 500"
-                    value={monthlyContribution}
-                    onChange={(e) => setMonthlyContribution(e.target.value)}
-                    className="w-full rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-blue-600"
-                  />
-                </div>
-
-                <div>
-                  <label className="mb-2 block text-sm font-semibold text-zinc-700">
-                    Interest rate (% per year)
-                  </label>
-                  <input
-                    type="number"
-                    placeholder="e.g. 10"
-                    value={interestRate}
-                    onChange={(e) => setInterestRate(e.target.value)}
-                    className="w-full rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-blue-600"
-                  />
-                </div>
-
-                <div>
-                  <label className="mb-2 block text-sm font-semibold text-zinc-700">
-                    Length of time (years)
-                  </label>
-                  <input
-                    type="number"
-                    placeholder="e.g. 30"
-                    value={years}
-                    onChange={(e) => setYears(e.target.value)}
-                    className="w-full rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-blue-600"
-                  />
-                </div>
+                <InputField
+                  label="Initial investment"
+                  placeholder="e.g. 10000"
+                  value={initialInvestment}
+                  onChange={setInitialInvestment}
+                />
+                <InputField
+                  label="Monthly contribution"
+                  placeholder="e.g. 500"
+                  value={monthlyContribution}
+                  onChange={setMonthlyContribution}
+                />
+                <InputField
+                  label="Interest rate (% per year)"
+                  placeholder="e.g. 10"
+                  value={interestRate}
+                  onChange={setInterestRate}
+                />
+                <InputField
+                  label="Length of time (years)"
+                  placeholder="e.g. 30"
+                  value={years}
+                  onChange={setYears}
+                />
               </div>
             </div>
 
             <div className="min-w-0">
               <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-2xl bg-zinc-50 p-4 shadow-sm">
-                  <p className="text-sm text-zinc-500">Total invested</p>
-                  <p className="mt-2 text-xl font-bold">
-                    {formatCurrency(calculatorData.totalInvested)}
-                  </p>
-                </div>
-
-                <div className="rounded-2xl bg-zinc-50 p-4 shadow-sm">
-                  <p className="text-sm text-zinc-500">Current value</p>
-                  <p className="mt-2 text-xl font-bold text-blue-600">
-                    {formatCurrency(calculatorData.finalValue)}
-                  </p>
-                </div>
-
-                <div className="rounded-2xl bg-zinc-50 p-4 shadow-sm">
-                  <p className="text-sm text-zinc-500">Growth earned</p>
-                  <p className="mt-2 text-xl font-bold text-emerald-600">
-                    {formatCurrency(calculatorData.totalGrowth)}
-                  </p>
-                </div>
+                <InfoCard
+                  label="Total invested"
+                  value={formatCurrency(calculatorData.totalInvested)}
+                />
+                <InfoCard
+                  label="Current value"
+                  value={formatCurrency(calculatorData.finalValue)}
+                  valueClassName="text-blue-600"
+                />
+                <InfoCard
+                  label="Growth earned"
+                  value={formatCurrency(calculatorData.totalGrowth)}
+                  valueClassName="text-emerald-600"
+                />
               </div>
 
-              <div className="mt-4 rounded-3xl bg-zinc-50 p-4 sm:p-5">
+              <div className="mt-4 rounded-[24px] border border-zinc-200/70 bg-zinc-50 p-4 sm:p-5">
                 <div className="mb-3">
-                  <h3 className="text-lg font-bold">Invested Money vs Current Value</h3>
+                  <h3 className="text-base font-bold sm:text-lg">
+                    Invested Money vs Current Value
+                  </h3>
                   <p className="mt-1 text-sm text-zinc-500">
                     See how compound growth accelerates over time.
                   </p>
                 </div>
 
-                <div className="h-[300px] w-full sm:h-[340px]">
+                <div className="h-[260px] w-full sm:h-[320px] md:h-[340px]">
                   {Number(years) > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={calculatorData.yearlyData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" />
                         <XAxis dataKey="year" tick={{ fontSize: 12 }} />
                         <YAxis
+                          width={70}
                           tick={{ fontSize: 12 }}
                           tickFormatter={(value) => `$${Number(value).toLocaleString()}`}
-                          width={80}
                         />
                         <Tooltip
                           formatter={(value: number) => formatCurrency(value)}
@@ -385,6 +463,7 @@ export default function FinanceWithPanthAboutPage() {
                           stroke="#71717a"
                           strokeWidth={3}
                           dot={false}
+                          name="Invested"
                         />
                         <Line
                           type="monotone"
@@ -392,11 +471,12 @@ export default function FinanceWithPanthAboutPage() {
                           stroke="#2563eb"
                           strokeWidth={3}
                           dot={false}
+                          name="Portfolio Value"
                         />
                       </LineChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="flex h-full items-center justify-center text-zinc-400">
+                    <div className="flex h-full items-center justify-center text-center text-sm text-zinc-400">
                       Enter values above to see the growth chart
                     </div>
                   )}
@@ -407,63 +487,47 @@ export default function FinanceWithPanthAboutPage() {
         </div>
       </section>
 
-      {/* CONNECT */}
-      <section id="connect" ref={connectRef} className="scroll-mt-24 border-t bg-zinc-50 py-20">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="max-w-3xl">
-            <h2 className="text-3xl font-bold sm:text-4xl">Connect With Me</h2>
-            <p className="mt-4 text-lg leading-8 text-zinc-600">
-              Follow my content across platforms.
-            </p>
-          </div>
+      <section
+        id="connect"
+        ref={connectRef}
+        className="scroll-mt-24 border-t bg-zinc-50 py-14 sm:py-20"
+      >
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="rounded-[28px] border border-zinc-200/80 bg-white p-6 shadow-sm sm:p-8">
+            <SectionTitle
+              title="Connect With Me"
+              description="Follow my content across platforms."
+              centered
+            />
 
-          <div className="mt-10 flex items-center gap-8">
-            <a
-              href="https://www.instagram.com/financewithpanth?igsh=MWFsaHl5NW0zcXpnbg%3D%3D"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Instagram"
-              title="Instagram"
-              className="text-zinc-700 transition hover:text-pink-600"
-            >
-              <Instagram className="h-8 w-8" />
-            </a>
+            <div className="flex flex-wrap justify-center gap-4">
+              <SocialLink
+                href="https://www.instagram.com/financewithpanth?igsh=MWFsaHl5NW0zcXpnbg%3D%3D"
+                label="Instagram"
+              >
+                <Instagram className="h-7 w-7" />
+              </SocialLink>
 
-            <a
-              href="https://tiktok.com/@financewithpanth"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="TikTok"
-              title="TikTok"
-              className="text-zinc-700 transition hover:text-black"
-            >
-              <TikTokIcon className="h-8 w-8" />
-            </a>
+              <SocialLink href="https://tiktok.com/@financewithpanth" label="TikTok">
+                <TikTokIcon className="h-7 w-7" />
+              </SocialLink>
 
-            <a
-              href="mailto:financewithpanth@gmail.com"
-              aria-label="Email Panthpreet"
-              title="Email Panthpreet"
-              className="text-zinc-700 transition hover:text-blue-600"
-            >
-              <Mail className="h-8 w-8" />
-            </a>
+              <SocialLink href="mailto:financewithpanth@gmail.com" label="Email Panthpreet">
+                <Mail className="h-7 w-7" />
+              </SocialLink>
 
-            <a
-              href="https://www.facebook.com/people/Financewithpanth/61574887317013/"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Facebook"
-              title="Facebook"
-              className="text-zinc-700 transition hover:text-blue-700"
-            >
-              <Facebook className="h-8 w-8" />
-            </a>
+              <SocialLink
+                href="https://www.facebook.com/people/Financewithpanth/61574887317013/"
+                label="Facebook"
+              >
+                <Facebook className="h-7 w-7" />
+              </SocialLink>
+            </div>
           </div>
         </div>
       </section>
 
-      <footer className="border-t bg-white py-8 text-center text-sm text-zinc-500">
+      <footer className="border-t bg-white px-4 py-10 text-center text-sm text-zinc-500">
         © {new Date().getFullYear()} Finance With Panth — Educational purposes only.
       </footer>
     </div>
