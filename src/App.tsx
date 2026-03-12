@@ -1,5 +1,6 @@
 import React, { useMemo, useRef, useState } from "react";
 import { Instagram, Mail, Facebook } from "lucide-react";
+import { Link } from "react-router-dom";
 import {
   LineChart,
   Line,
@@ -38,13 +39,19 @@ function SectionTitle({
   return (
     <div className={`mb-8 max-w-3xl ${centered ? "mx-auto text-center" : ""}`}>
       {eyebrow ? (
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 sm:text-sm">
           {eyebrow}
         </p>
       ) : null}
-      <h2 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl">{title}</h2>
+
+      <h2 className="mt-2 text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl md:text-4xl">
+        {title}
+      </h2>
+
       {description ? (
-        <p className="mt-3 text-sm leading-7 text-zinc-600 sm:text-base">{description}</p>
+        <p className="mt-3 text-sm leading-7 text-zinc-600 sm:text-base">
+          {description}
+        </p>
       ) : null}
     </div>
   );
@@ -63,21 +70,6 @@ function InfoCard({
     <div className="rounded-2xl bg-zinc-50 p-4 shadow-sm">
       <p className="text-sm text-zinc-500">{label}</p>
       <p className={`mt-2 text-lg font-bold sm:text-xl ${valueClassName}`}>{value}</p>
-    </div>
-  );
-}
-
-function FeatureCard({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="rounded-3xl bg-white p-5 shadow-md">
-      <h3 className="text-base font-semibold sm:text-lg">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-zinc-600">{description}</p>
     </div>
   );
 }
@@ -144,11 +136,13 @@ function SocialLink({
   label: string;
   children: React.ReactNode;
 }) {
+  const isMail = href.startsWith("mailto:");
+
   return (
     <a
       href={href}
-      target={href.startsWith("mailto:") ? undefined : "_blank"}
-      rel={href.startsWith("mailto:") ? undefined : "noreferrer"}
+      target={isMail ? undefined : "_blank"}
+      rel={isMail ? undefined : "noreferrer"}
       aria-label={label}
       title={label}
       className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-zinc-700 shadow-sm transition hover:-translate-y-0.5 hover:text-blue-600"
@@ -158,7 +152,15 @@ function SocialLink({
   );
 }
 
-export default function FinanceWithPanthAboutPage() {
+function MarketBadge({ label }: { label: string }) {
+  return (
+    <div className="rounded-full border border-zinc-200 bg-white px-4 py-3 text-center shadow-sm">
+      <p className="text-sm font-semibold text-zinc-700">{label}</p>
+    </div>
+  );
+}
+
+export default function App() {
   const aboutRef = useRef<HTMLElement | null>(null);
   const calculatorRef = useRef<HTMLElement | null>(null);
   const connectRef = useRef<HTMLElement | null>(null);
@@ -222,7 +224,7 @@ export default function FinanceWithPanthAboutPage() {
   return (
     <div className="min-h-screen bg-white text-zinc-900">
       <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/75">
-        <div className="mx-auto flex max-w-6xl items-center justify-center px-3 py-3 sm:justify-end sm:px-6 sm:py-4">
+        <div className="mx-auto flex max-w-6xl items-center justify-center px-4 py-3 sm:justify-end sm:px-6 sm:py-4">
           <nav className="grid w-full max-w-sm grid-cols-3 gap-2 rounded-2xl bg-zinc-100/80 p-1 text-sm font-medium text-zinc-700 sm:flex sm:w-auto sm:max-w-none sm:bg-transparent sm:p-0">
             <button
               onClick={() => scrollToSection(aboutRef)}
@@ -273,12 +275,13 @@ export default function FinanceWithPanthAboutPage() {
               >
                 Compound Interest Calculator
               </button>
-              <button
-                onClick={() => scrollToSection(connectRef)}
-                className="w-full rounded-2xl border border-zinc-200 bg-white px-6 py-3.5 text-sm font-semibold text-zinc-700 transition hover:border-zinc-300 hover:bg-zinc-50 sm:w-auto"
+
+              <Link
+                to="/ai"
+                className="w-full rounded-2xl border border-zinc-200 bg-white px-6 py-3.5 text-center text-sm font-semibold text-zinc-700 transition hover:border-zinc-300 hover:bg-zinc-50 sm:w-auto"
               >
-                Connect With Me
-              </button>
+                Open AI Assistant
+              </Link>
             </div>
           </div>
 
@@ -323,24 +326,14 @@ export default function FinanceWithPanthAboutPage() {
             </p>
           </div>
 
-          <div className="mt-8 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-2xl border border-zinc-200/80 bg-white px-4 py-4 shadow-sm">
-              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-400">
-                Market Coverage
-              </p>
-              <p className="mt-1 text-sm font-semibold text-zinc-700">India 🇮🇳</p>
-            </div>
-            <div className="rounded-2xl border border-zinc-200/80 bg-white px-4 py-4 shadow-sm">
-              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-400">
-                Market Coverage
-              </p>
-              <p className="mt-1 text-sm font-semibold text-zinc-700">US 🇺🇸</p>
-            </div>
-            <div className="rounded-2xl border border-zinc-200/80 bg-white px-4 py-4 shadow-sm">
-              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-400">
-                Market Coverage
-              </p>
-              <p className="mt-1 text-sm font-semibold text-zinc-700">Canada 🇨🇦</p>
+          <div className="mt-8">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">
+              Market Coverage
+            </p>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <MarketBadge label="India 🇮🇳" />
+              <MarketBadge label="US 🇺🇸" />
+              <MarketBadge label="Canada 🇨🇦" />
             </div>
           </div>
 
@@ -369,6 +362,12 @@ export default function FinanceWithPanthAboutPage() {
             description="My approach to investing is based on simplicity, discipline, and long-term thinking. Instead of chasing quick profits, I focus on building sustainable wealth over decades."
             centered
           />
+
+          <div className="grid gap-4 sm:grid-cols-3">
+            <StatCard label="Approach" title="Consistency over hype" />
+            <StatCard label="Mindset" title="Patience compounds wealth" />
+            <StatCard label="Strategy" title="Simple beats complicated" />
+          </div>
         </div>
       </section>
 
