@@ -1,6 +1,5 @@
 import React, { useMemo, useRef, useState } from "react";
-import { Instagram, Mail, Facebook } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Instagram, Mail, Facebook, CalendarDays } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -49,9 +48,7 @@ function SectionTitle({
       </h2>
 
       {description ? (
-        <p className="mt-3 text-sm leading-7 text-zinc-600 sm:text-base">
-          {description}
-        </p>
+        <p className="mt-3 text-sm leading-7 text-zinc-600 sm:text-base">{description}</p>
       ) : null}
     </div>
   );
@@ -160,9 +157,18 @@ function MarketBadge({ label }: { label: string }) {
   );
 }
 
+function openBookingLink() {
+  window.open(
+    "https://cal.com/financewithpanth/one-on-one-consultation-call",
+    "_blank",
+    "noopener,noreferrer"
+  );
+}
+
 export default function App() {
   const aboutRef = useRef<HTMLElement | null>(null);
   const calculatorRef = useRef<HTMLElement | null>(null);
+  const bookingRef = useRef<HTMLElement | null>(null);
   const connectRef = useRef<HTMLElement | null>(null);
 
   const [initialInvestment, setInitialInvestment] = useState("");
@@ -200,9 +206,9 @@ export default function App() {
       currentValue = currentValue * (1 + monthlyRate) + monthly;
       investedMoney += monthly;
 
-      if (month % 12 === 0) {
+      if (month % 12 === 0 || month === totalMonths) {
         yearlyData.push({
-          year: month / 12,
+          year: Number((month / 12).toFixed(1)),
           invested: Math.round(investedMoney),
           value: Math.round(currentValue),
         });
@@ -225,7 +231,7 @@ export default function App() {
     <div className="min-h-screen bg-white text-zinc-900">
       <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/75">
         <div className="mx-auto flex max-w-6xl items-center justify-center px-4 py-3 sm:justify-end sm:px-6 sm:py-4">
-          <nav className="grid w-full max-w-sm grid-cols-3 gap-2 rounded-2xl bg-zinc-100/80 p-1 text-sm font-medium text-zinc-700 sm:flex sm:w-auto sm:max-w-none sm:bg-transparent sm:p-0">
+          <nav className="grid w-full max-w-md grid-cols-4 gap-2 rounded-2xl bg-zinc-100/80 p-1 text-sm font-medium text-zinc-700 sm:flex sm:w-auto sm:max-w-none sm:bg-transparent sm:p-0 sm:gap-6">
             <button
               onClick={() => scrollToSection(aboutRef)}
               className="rounded-xl px-3 py-2 transition hover:bg-white hover:text-blue-600 sm:px-0 sm:py-0 sm:hover:bg-transparent"
@@ -237,6 +243,12 @@ export default function App() {
               className="rounded-xl px-3 py-2 transition hover:bg-white hover:text-blue-600 sm:px-0 sm:py-0 sm:hover:bg-transparent"
             >
               Calculator
+            </button>
+            <button
+              onClick={() => scrollToSection(bookingRef)}
+              className="rounded-xl px-3 py-2 transition hover:bg-white hover:text-blue-600 sm:px-0 sm:py-0 sm:hover:bg-transparent"
+            >
+              Book
             </button>
             <button
               onClick={() => scrollToSection(connectRef)}
@@ -257,9 +269,7 @@ export default function App() {
 
             <h1 className="max-w-xl text-3xl font-bold leading-[1.05] tracking-tight text-zinc-900 sm:text-5xl md:text-6xl">
               Helping everyday people
-              <span className="mt-1 block text-blue-600">
-                build wealth through simple investing.
-              </span>
+              <span className="mt-1 block text-blue-600">build wealth through simple investing.</span>
             </h1>
 
             <p className="mt-5 max-w-xl text-[15px] leading-7 text-zinc-600 sm:text-lg sm:leading-8">
@@ -268,20 +278,28 @@ export default function App() {
               their money over time.
             </p>
 
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+              {/* PRIMARY CTA */}
               <button
-                onClick={() => scrollToSection(calculatorRef)}
-                className="w-full rounded-2xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-md shadow-blue-200/70 transition hover:bg-blue-700 sm:w-auto"
+                type="button"
+                onClick={openBookingLink}
+                className="w-full rounded-2xl bg-emerald-600 px-7 py-4 text-center text-base font-semibold text-white shadow-lg shadow-emerald-200/70 transition hover:bg-emerald-700 sm:w-auto"
               >
-                Compound Interest Calculator
+                Get Personal Investing Plan
               </button>
 
-              <Link
-                to="/ai"
-                className="w-full rounded-2xl border border-zinc-200 bg-white px-6 py-3.5 text-center text-sm font-semibold text-zinc-700 transition hover:border-zinc-300 hover:bg-zinc-50 sm:w-auto"
+              {/* PRICE + URGENCY */}
+              <p className="text-xs text-zinc-500 sm:ml-2">
+                Starting at $55 • Limited slots weekly
+              </p>
+
+              {/* SECONDARY CTA */}
+              <button
+                onClick={() => scrollToSection(calculatorRef)}
+                className="w-full rounded-2xl border border-zinc-200 bg-white px-6 py-3.5 text-sm font-semibold text-zinc-700 transition hover:border-zinc-300 hover:bg-zinc-50 sm:w-auto"
               >
-                Open AI Assistant
-              </Link>
+                Try Calculator First
+              </button>
             </div>
           </div>
 
@@ -339,9 +357,7 @@ export default function App() {
 
           <div className="mt-8 rounded-[28px] bg-gradient-to-br from-blue-600 to-blue-700 p-6 text-white shadow-lg shadow-blue-200/70">
             <p className="text-sm opacity-80">Experience</p>
-            <h3 className="mt-1 text-xl font-bold sm:text-2xl">
-              7+ Years Investing Across Global Markets
-            </h3>
+            <h3 className="mt-1 text-xl font-bold sm:text-2xl">7+ Years Investing Across Global Markets</h3>
             <p className="mt-2 text-sm leading-6 text-blue-100">
               Focused on long-term investing through ETFs and fundamentally strong companies.
             </p>
@@ -415,10 +431,7 @@ export default function App() {
 
             <div className="min-w-0">
               <div className="grid gap-3 sm:grid-cols-3">
-                <InfoCard
-                  label="Total invested"
-                  value={formatCurrency(calculatorData.totalInvested)}
-                />
+                <InfoCard label="Total invested" value={formatCurrency(calculatorData.totalInvested)} />
                 <InfoCard
                   label="Current value"
                   value={formatCurrency(calculatorData.finalValue)}
@@ -433,12 +446,8 @@ export default function App() {
 
               <div className="mt-4 rounded-[24px] border border-zinc-200/70 bg-zinc-50 p-4 sm:p-5">
                 <div className="mb-3">
-                  <h3 className="text-base font-bold sm:text-lg">
-                    Invested Money vs Current Value
-                  </h3>
-                  <p className="mt-1 text-sm text-zinc-500">
-                    See how compound growth accelerates over time.
-                  </p>
+                  <h3 className="text-base font-bold sm:text-lg">Invested Money vs Current Value</h3>
+                  <p className="mt-1 text-sm text-zinc-500">See how compound growth accelerates over time.</p>
                 </div>
 
                 <div className="h-[260px] w-full sm:h-[320px] md:h-[340px]">
@@ -486,18 +495,57 @@ export default function App() {
         </div>
       </section>
 
-      <section
-        id="connect"
-        ref={connectRef}
-        className="scroll-mt-24 border-t bg-zinc-50 py-14 sm:py-20"
-      >
+      <section id="booking" ref={bookingRef} className="scroll-mt-24 bg-zinc-50 py-14 sm:py-20">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6">
+          <div className="rounded-[28px] border border-zinc-200/80 bg-white p-6 shadow-sm sm:p-8 md:p-10">
+            <SectionTitle
+              eyebrow="Book a Session"
+              title="Schedule a 1-on-1 consultation call"
+              description="Get personalized investing guidance tailored to your goals, risk appetite, and financial situation."
+              centered
+            />
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+              <StatCard label="Video Call" title="Google Meet link sent automatically" />
+              <StatCard label="Flexible Timing" title="Pick a slot that works for you" />
+              <StatCard label="Personalized Advice" title="Tailored to your portfolio and goals" />
+            </div>
+
+            <div className="mt-10 rounded-[28px] bg-gradient-to-br from-zinc-900 to-zinc-800 px-6 py-8 text-center text-white sm:px-8">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-300">
+                Ready to talk investing?
+              </p>
+              <h3 className="mt-3 text-2xl font-bold sm:text-3xl">Book your consultation call with Panth</h3>
+              <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-zinc-300 sm:text-base">
+                Whether you&apos;re just starting out or optimizing an existing portfolio — let&apos;s
+                talk about your money.
+              </p>
+
+              <button
+                type="button"
+                onClick={openBookingLink}
+                className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-emerald-600 px-8 py-3.5 text-sm font-semibold text-white shadow-md shadow-emerald-900/20 transition hover:bg-emerald-700"
+              >
+                <CalendarDays className="h-5 w-5" />
+                Book Your Session
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="connect" ref={connectRef} className="scroll-mt-24 border-t bg-zinc-50 py-14 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="rounded-[28px] border border-zinc-200/80 bg-white p-6 shadow-sm sm:p-8">
             <SectionTitle
               title="Connect With Me"
-              description="Follow my content across platforms."
+              description="Follow my content across platforms or book a 1-on-1 session."
               centered
             />
+
+            <p className="mb-6 text-center text-sm text-zinc-500">
+              Want personalized help? Book a consultation call or connect with me on social media.
+            </p>
 
             <div className="flex flex-wrap justify-center gap-4">
               <SocialLink
@@ -521,6 +569,16 @@ export default function App() {
               >
                 <Facebook className="h-7 w-7" />
               </SocialLink>
+
+              <button
+                type="button"
+                onClick={openBookingLink}
+                aria-label="Book 1:1 Call"
+                title="Book 1:1 Call"
+                className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-zinc-700 shadow-sm transition hover:-translate-y-0.5 hover:text-blue-600"
+              >
+                <CalendarDays className="h-7 w-7" />
+              </button>
             </div>
           </div>
         </div>
