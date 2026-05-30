@@ -290,7 +290,7 @@ export default function App() {
 
               {/* PRICE + URGENCY */}
               <p className="text-xs text-zinc-500 sm:ml-2">
-                Starting at $55 • Limited slots weekly
+                Starting at $99 • Limited slots weekly
               </p>
 
               {/* SECONDARY CTA */}
