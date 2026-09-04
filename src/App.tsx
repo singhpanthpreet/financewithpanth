@@ -309,7 +309,7 @@ export default function App() {
               <div className="absolute inset-0 rounded-full border border-blue-100" />
               <div className="relative h-48 w-48 overflow-hidden rounded-full border-[6px] border-white shadow-[0_20px_60px_rgba(0,0,0,0.12)] sm:h-64 sm:w-64 md:h-72 md:w-72">
                 <img
-                  src="/panth.JPG"
+                  src="../Public/panth.JPG"
                   alt="Panthpreet Singh"
                   className="h-full w-full object-cover object-center"
                 />
